@@ -3,6 +3,30 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+download_if_missing() {
+    local url="$1"
+    local dest="$2"
+
+    if [ -f "$dest" ]; then
+        echo "Model exists, skipping: $dest"
+        return
+    fi
+
+    echo "Downloading model: $dest"
+    mkdir -p "$(dirname "$dest")"
+    wget -q --show-progress "$url" -O "$dest"
+    echo "Download complete: $dest"
+}
+
+echo "Checking required model files..."
+download_if_missing "https://huggingface.co/mig1234/WanVideo_comfy_fp8_scaled/resolve/main/I2V/Wan2_2-I2V-A14B-HIGH_fp8_e4m3fn_scaled_KJ.safetensors" "/ComfyUI/models/diffusion_models/Wan2_2-I2V-A14B-HIGH_fp8_e4m3fn_scaled_KJ.safetensors"
+download_if_missing "https://huggingface.co/mig1234/WanVideo_comfy_fp8_scaled/resolve/main/I2V/Wan2_2-I2V-A14B-LOW_fp8_e4m3fn_scaled_KJ.safetensors" "/ComfyUI/models/diffusion_models/Wan2_2-I2V-A14B-LOW_fp8_e4m3fn_scaled_KJ.safetensors"
+download_if_missing "https://huggingface.co/mig1234/Wan2.2-Lightning/resolve/main/Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1/high_noise_model.safetensors" "/ComfyUI/models/loras/high_noise_model.safetensors"
+download_if_missing "https://huggingface.co/mig1234/Wan2.2-Lightning/resolve/main/Wan2.2-I2V-A14B-4steps-lora-rank64-Seko-V1/low_noise_model.safetensors" "/ComfyUI/models/loras/low_noise_model.safetensors"
+download_if_missing "https://huggingface.co/mig1234/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/clip_vision/clip_vision_h.safetensors" "/ComfyUI/models/clip_vision/clip_vision_h.safetensors"
+download_if_missing "https://huggingface.co/mig1234/WanVideo_comfy/resolve/main/umt5-xxl-enc-bf16.safetensors" "/ComfyUI/models/text_encoders/umt5-xxl-enc-bf16.safetensors"
+download_if_missing "https://huggingface.co/mig1234/WanVideo_comfy/resolve/main/Wan2_1_VAE_bf16.safetensors" "/ComfyUI/models/vae/Wan2_1_VAE_bf16.safetensors"
+
 # Start ComfyUI in the background
 echo "Starting ComfyUI in the background..."
 python /ComfyUI/main.py --listen --use-sage-attention &
